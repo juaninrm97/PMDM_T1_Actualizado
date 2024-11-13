@@ -1,0 +1,16 @@
+<resources>
+    <!-- Colores básicos -->
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="colorBackground">#FFFFFF</color>
+    <color name="colorTextPrimary">#000000</color>
+    <color name="colorTextSecondary">#757575</color>
+
+    <!-- Botones -->
+    <color name="colorButtonBackground">#6200EE</color>
+    <color name="colorButtonText">#FFFFFF</color>
+
+    <!-- Errores -->
+    <color name="colorError">#B00020</color>
+</resources>
