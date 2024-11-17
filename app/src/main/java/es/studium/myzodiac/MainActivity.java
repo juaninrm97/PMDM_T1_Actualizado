@@ -52,29 +52,53 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 String inputDate = s.toString();
-                if (inputDate.length() == 10) { // dd/MM/yyyy
+                if (inputDate.length() == 10) { // Formato esperado: dd/MM/yyyy
+                    String[] dateParts = inputDate.split("/");
                     try {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setLenient(false); // Establece modo estricto para lanzar excepción si la fecha es inválida
-                        calendar.setTime(dateFormat.parse(inputDate));
+                        int day = Integer.parseInt(dateParts[0]);
+                        int month = Integer.parseInt(dateParts[1]);
+                        int year = Integer.parseInt(dateParts[2]);
 
-                        int day = calendar.get(Calendar.DAY_OF_MONTH);
-                        int month = calendar.get(Calendar.MONTH); // Zero-based
-                        int year = calendar.get(Calendar.YEAR);
-
-                        // Validar días para el mes ingresado
-                        if (day < 1 || day > calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-                            throw new ParseException("Día inválido", 0);
+                        // Validar el rango de mes
+                        if (month < 1 || month > 12) {
+                            Toast.makeText(MainActivity.this, "Mes inválido. Usa un mes entre 1 y 12.", Toast.LENGTH_SHORT).show();
+                            return;
                         }
 
-                        // Actualiza el DatePicker con la fecha ingresada si es válida
-                        datePicker.updateDate(year, month, day);
-                        isDateSetByUser = true; // Marca la bandera para indicar que el usuario ingresó una fecha
-                    } catch (ParseException e) {
-                        Toast.makeText(MainActivity.this, "Fecha inválida. Usa dd/MM/yyyy", Toast.LENGTH_SHORT).show();
+                        // Definir los días máximos para cada mes
+                        int maxDaysInMonth;
+                        switch (month) {
+                            case 4: case 6: case 9: case 11: // Meses con 30 días
+                                maxDaysInMonth = 30;
+                                break;
+                            case 2: // Febrero
+                                // Verificar años bisiestos
+                                if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
+                                    maxDaysInMonth = 29;
+                                } else {
+                                    maxDaysInMonth = 28;
+                                }
+                                break;
+                            default: // Meses con 31 días
+                                maxDaysInMonth = 31;
+                        }
+
+                        // Validar el rango de días
+                        if (day < 1 || day > maxDaysInMonth) {
+                            Toast.makeText(MainActivity.this, "Día inválido. El mes ingresado tiene un máximo de " + maxDaysInMonth + " días.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        // Si la fecha es válida, actualiza el DatePicker
+                        datePicker.updateDate(year, month - 1, day); // `month - 1` porque `DatePicker` usa meses cero-basados
+                        isDateSetByUser = true;
+                    } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                        Toast.makeText(MainActivity.this, "Fecha inválida. Usa el formato dd/MM/yyyy", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
+
+
         });
 
         // Listener del botón de aceptar (sin cambios)
